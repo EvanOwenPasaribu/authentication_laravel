@@ -1,5 +1,9 @@
 <?php
 
+use App\Events\GroupEvent;
+use App\Events\PresenceEvent;
+use App\Events\PresenceTestingEvent;
+use App\Events\TestingEvent;
 use App\Http\Controllers\auth\EmailVerificationController;
 use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\LoginController;
@@ -7,6 +11,7 @@ use App\Http\Controllers\auth\RegisterController;
 use App\Http\Controllers\auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,7 +43,7 @@ Route::get('password/reset/{token}', [ResetPasswordController::class, "index"])-
 Route::post('password/reset', [ResetPasswordController::class, "reset"])->name('reset');
 Route::get('/email/verify', [EmailVerificationController::class, "index"])->name('verification.notice');
 Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, "verify"])->middleware(['auth', 'signed'])->name('verification.verify');
-Route::post('/email/verification-notification',[EmailVerificationController::class, "sendVerification"])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::post('/email/verification-notification', [EmailVerificationController::class, "sendVerification"])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 Route::get('/profile', [UserController::class, "profile"])->middleware(['auth', 'verified'])->name('profile');
 
@@ -46,3 +51,29 @@ Route::get('auth/gmail', [LoginController::class, "redirectToGmail"])->name("log
 Route::get('auth/gmail/callback', [LoginController::class, "handleGmailCallback"])->name("gmail.callback");
 
 Route::get('auth/register/gmail', [RegisterController::class, "redirectToGmail"])->name("register.gmail");
+
+Route::get('/event', function () {
+    TestingEvent::dispatch("semangat bertarung");
+});
+
+Route::get('/listen', function () {
+    return view("mylisten");
+});
+
+Route::get('/eventgroup/{id}', function ($id) {
+    GroupEvent::dispatch($id);
+})->middleware(['auth']);
+
+Route::get('/listen_group/{id}', function ($id) {
+    return view("mylistengroup")->with(['id' => $id]);
+})->middleware(['auth']);
+
+
+Route::post('/eventpresence/{id}', function (Request $request, $id) {
+    broadcast(new PresenceTestingEvent($request->message, auth()->user()));
+    return "oke";
+});
+
+Route::get('/listen_presence/{id}', function ($id) {
+    return view("mylistenpresence")->with(['id' => $id]);
+})->middleware(['auth']);

@@ -13,6 +13,18 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
+Broadcast::channel('group.{id}', function ($user, $id) {
+    return ['id' => $user->id, 'name' => $user->name];
+    return true;
     return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('presence.1', function ($user) {
+    // dd($user);
+    return $user;
+    return ['id' => $user->id, 'name' => $user->name];
+});
+
+Broadcast::channel('notification', function () {
+    return true;
 });

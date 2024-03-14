@@ -104,7 +104,7 @@
 
 			<h1><?php echo $messages[mt_rand(0, 2)]; ?></h1>
 
-			<h2>Server Error: 404 (Not Found)</h2>
+			<h2>Server Error: 503</h2>
 
 			<hr>
 

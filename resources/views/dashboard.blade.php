@@ -27,4 +27,12 @@
         </div>
     </div>
 
+    <script>
+        $( document ).ready(function() {
+        console.log(Echo)
+        let userId = {{ Auth::id() }};
+        })
+        
+    </script>
+
 @endsection

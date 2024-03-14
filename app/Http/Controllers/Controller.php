@@ -19,6 +19,7 @@ class Controller extends BaseController
         $settings = Setting::all();
         $this->site_settings = $settings->pluck('value', 'key')->all();
         View::share('site_settings', $this->site_settings);
+
     }
 
     public function getValueSetting($key){

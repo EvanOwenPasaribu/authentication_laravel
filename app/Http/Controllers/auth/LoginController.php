@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\auth;
 
+use App\Events\UserOnlineStatusUpdated;
 use App\Exceptions\CustomException;
 use App\Http\Controllers\Controller;
 use App\Models\RegisterType;
@@ -63,6 +64,7 @@ class LoginController extends Controller
         $remember = $request->filled('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            auth()->user()->update(['online' => true]);
             Cache::forget('login_attempts_' . $email);
             $request->session()->regenerate();
             return redirect()->route('login')
@@ -132,10 +134,11 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        auth()->user()->update(['online' => false]);
+        // broadcast(new UserOnlineStatusUpdated(auth()->user()->id, 0));
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('login')->withSuccess('You have logged out successfully!');
     }
 }
